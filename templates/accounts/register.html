@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Алтын Алтай — музей минералов</title>
+
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Алтын Алтай">
+
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="icon" href="/static/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-white via-indigo-50 to-sky-50 text-slate-800">
+
+  <main class="max-w-md mx-auto px-4 py-16">
+    <div class="rounded-3xl bg-white/90 border border-indigo-100 p-6 shadow-lg">
+      <h1 class="text-2xl font-extrabold">Регистрация</h1>
+      <p class="text-sm text-slate-500 mt-1">Создайте личный кабинет посетителя.</p>
+
+      {% if messages %}
+        <div class="mt-4 space-y-2">
+          {% for m in messages %}
+            <div class="text-sm rounded-xl px-3 py-2 border border-red-200 bg-red-50 text-red-700">{{ m }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form class="mt-6 space-y-3" method="post">
+        {% csrf_token %}
+
+        <div>
+          <label class="text-sm text-slate-600">Логин</label>
+          <input name="username" class="mt-1 w-full px-4 py-3 rounded-2xl border border-indigo-200 bg-white outline-none focus:ring-2 focus:ring-indigo-200" required />
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-600">Email (необязательно)</label>
+          <input name="email" type="email" class="mt-1 w-full px-4 py-3 rounded-2xl border border-indigo-200 bg-white outline-none focus:ring-2 focus:ring-indigo-200" />
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-600">Пароль</label>
+          <input name="password1" type="password" class="mt-1 w-full px-4 py-3 rounded-2xl border border-indigo-200 bg-white outline-none focus:ring-2 focus:ring-indigo-200" required />
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-600">Повтор пароля</label>
+          <input name="password2" type="password" class="mt-1 w-full px-4 py-3 rounded-2xl border border-indigo-200 bg-white outline-none focus:ring-2 focus:ring-indigo-200" required />
+        </div>
+
+        <button class="w-full mt-2 px-5 py-3 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-semibold">
+          Создать аккаунт
+        </button>
+      </form>
+
+      <div class="mt-5 text-sm text-slate-600">
+        Уже есть аккаунт?
+        <a href="/auth/login/" class="text-violet-700 hover:underline">Войти</a>
+      </div>
+
+      <div class="mt-6">
+        <a href="/" class="text-sm text-slate-500 hover:underline">← На главную</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/static/sw.js")
+        .then(function (registration) {
+          console.log("Service Worker registered:", registration.scope);
+        })
+        .catch(function (error) {
+          console.log("Service Worker registration failed:", error);
+        });
+    });
+  }
+  </script>
+
+</body>
+</html>

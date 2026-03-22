@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Галерея распознаваний — Алтын Алтай</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900">
+
+  {% include "includes/header.html" %}
+
+  <section class="max-w-7xl mx-auto px-6 py-12">
+
+    <div class="mb-10">
+      <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">
+        AI Галерея
+      </div>
+
+      <h1 class="mt-2 text-4xl font-extrabold">
+        Распознанные минералы
+      </h1>
+
+      <p class="mt-3 text-slate-600">
+        Фотографии минералов, распознанные системой искусственного интеллекта.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+      {% for rec in recognitions %}
+      <div class="bg-white rounded-3xl border border-indigo-100 shadow-sm hover:shadow-xl transition overflow-hidden">
+
+        {% if rec.image %}
+          <img src="{{ rec.image.url }}" alt="{{ rec.top1_label }}" class="h-52 w-full object-cover">
+        {% else %}
+          <div class="h-52 w-full bg-slate-100 flex items-center justify-center text-slate-400">
+            Нет фото
+          </div>
+        {% endif %}
+
+        <div class="p-4">
+          <div class="text-xs text-violet-600 font-semibold uppercase tracking-wider">
+            Распознанный минерал
+          </div>
+
+          <h2 class="text-lg font-bold mt-1">
+            {{ rec.top1_label }}
+          </h2>
+
+          <div class="mt-2 text-sm text-slate-500">
+            Вероятность:
+            <span class="font-semibold text-slate-800">
+              {{ rec.top1_conf|default_if_none:0|floatformat:2 }}%
+            </span>
+          </div>
+
+          <div class="mt-2 text-xs text-slate-400">
+            {{ rec.created_at|date:"d.m.Y H:i" }}
+          </div>
+
+          {% if rec.predicted_mineral %}
+            <a href="{% url 'pages:mineral_detail' rec.predicted_mineral.slug %}"
+               class="inline-block mt-4 px-4 py-2 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition">
+              Открыть минерал
+            </a>
+          {% endif %}
+        </div>
+
+      </div>
+      {% empty %}
+      <div class="col-span-full bg-white rounded-3xl border border-indigo-100 shadow-sm p-10 text-center">
+        <div class="text-2xl font-bold">Галерея пока пуста</div>
+        <p class="mt-3 text-slate-600">
+          Загрузите несколько изображений через распознавание, и они появятся здесь.
+        </p>
+      </div>
+      {% endfor %}
+
+    </div>
+
+  </section>
+
+</body>
+</html>

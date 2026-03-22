@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Экскурсии — Алтын Алтай</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900">
+
+  <div class="max-w-6xl mx-auto px-6 py-10">
+    <div class="mb-8">
+      <a href="/" class="text-violet-700 hover:underline">← На главную</a>
+      <h1 class="mt-3 text-4xl font-extrabold">Экскурсии и образовательные маршруты</h1>
+      <p class="mt-2 text-slate-600">Демонстрационные программы для посетителей музея.</p>
+    </div>
+
+    <div class="grid gap-5">
+      {% for tour in tours %}
+      <div class="rounded-[1.75rem] bg-white border border-indigo-100 shadow-sm p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <div class="text-2xl font-bold">{{ tour.title }}</div>
+            <div class="mt-2 text-slate-600">{{ tour.description }}</div>
+          </div>
+          <div class="px-4 py-2 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 text-sm font-semibold">
+            {{ tour.duration }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</body>
+</html>

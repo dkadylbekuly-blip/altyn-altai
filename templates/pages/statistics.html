@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Статистика распознаваний — Алтын Алтай</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900">
+
+  {% include "includes/header.html" %}
+
+  <section class="max-w-7xl mx-auto px-6 py-12">
+    <div class="mb-8">
+      <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">Аналитика системы</div>
+      <h1 class="mt-2 text-4xl font-extrabold">Статистика распознаваний</h1>
+      <p class="mt-3 text-slate-600">
+        Обзор работы модели, источников изображений и наиболее часто распознаваемых минералов.
+      </p>
+    </div>
+
+    <!-- KPI -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-6">
+        <div class="text-sm text-slate-500">Всего распознаваний</div>
+        <div class="mt-3 text-4xl font-extrabold text-violet-700">{{ total_recognitions }}</div>
+      </div>
+
+      <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-6">
+        <div class="text-sm text-slate-500">Через загрузку фото</div>
+        <div class="mt-3 text-4xl font-extrabold text-sky-700">{{ upload_count }}</div>
+      </div>
+
+      <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-6">
+        <div class="text-sm text-slate-500">Через камеру</div>
+        <div class="mt-3 text-4xl font-extrabold text-emerald-700">{{ camera_count }}</div>
+      </div>
+    </div>
+
+    <!-- CHART + TOP -->
+    <div class="mt-10 grid lg:grid-cols-2 gap-8">
+      <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-8">
+        <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">Визуализация</div>
+        <h2 class="mt-2 text-2xl font-extrabold">Популярные минералы</h2>
+
+        <div class="mt-6">
+          <canvas id="mineralsChart" height="260"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-8">
+        <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">Популярные результаты</div>
+        <h2 class="mt-2 text-2xl font-extrabold">Top-10 минералов</h2>
+
+        <div class="mt-6 space-y-4">
+          {% for item in top_minerals %}
+            <div>
+              <div class="flex items-center justify-between text-sm mb-2">
+                <span class="font-semibold text-slate-800">{{ item.top1_label }}</span>
+                <span class="text-slate-500">{{ item.total }}</span>
+              </div>
+
+              <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
+                <div class="h-3 bg-gradient-to-r from-violet-600 to-sky-500"
+                     style="width: {% widthratio item.total total_recognitions 100 %}%;"></div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="text-slate-500">Пока нет данных для статистики.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- LATEST -->
+    <div class="mt-10 bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-8">
+      <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">Последние результаты</div>
+      <h2 class="mt-2 text-2xl font-extrabold">Недавние распознавания</h2>
+
+      <div class="mt-6 grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+        {% for rec in latest_recognitions %}
+          <div class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+            <div class="font-bold text-slate-900">{{ rec.top1_label }}</div>
+            <div class="mt-2 text-sm text-slate-500">
+              {{ rec.created_at|date:"d.m.Y H:i" }}
+            </div>
+            <div class="mt-3 text-sm font-semibold text-violet-700">
+              {{ rec.top1_conf|default_if_none:0|floatformat:2 }}%
+            </div>
+          </div>
+        {% empty %}
+          <div class="text-slate-500">История пока пуста.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {{ top_minerals|json_script:"top-minerals-data" }}
+
+  <script>
+    const rawData = JSON.parse(document.getElementById('top-minerals-data').textContent);
+
+    const labels = rawData.map(item => item.top1_label);
+    const values = rawData.map(item => item.total);
+
+    const ctx = document.getElementById('mineralsChart').getContext('2d');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Количество распознаваний',
+          data: values,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

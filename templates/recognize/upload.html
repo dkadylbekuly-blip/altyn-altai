@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Загрузка фото — Алтын Алтай</title>
+</head>
+
+<body class="min-h-screen bg-gradient-to-b from-slate-50 to-indigo-50">
+
+  <header class="bg-white shadow-sm border-b border-indigo-100">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div>
+        <div class="text-lg font-bold text-indigo-700">Музей «Алтын Алтай»</div>
+        <div class="text-xs text-slate-500">Распознавание минералов</div>
+      </div>
+
+      <div class="flex gap-3">
+        <a href="/" class="px-4 py-2 rounded-xl border border-indigo-200 bg-white hover:bg-indigo-50 transition">
+          На главную
+        </a>
+        <a href="/auth/cabinet/" class="px-4 py-2 rounded-xl bg-violet-600 text-white hover:bg-violet-700 transition">
+          Кабинет
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-14">
+    <div class="bg-white/80 backdrop-blur rounded-3xl shadow-xl border border-indigo-100 p-8">
+      <h1 class="text-3xl font-extrabold">Загрузить фото минерала</h1>
+      <p class="mt-2 text-slate-600">
+        Выберите изображение. После отправки результат сохранится в историю (кабинет).
+      </p>
+
+      <form method="post" enctype="multipart/form-data" class="mt-8 space-y-6">
+        {% csrf_token %}
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">Источник</label>
+          <select name="source" class="w-full px-4 py-3 rounded-2xl border border-indigo-100 bg-white">
+            <option value="Загрузка">Загрузка</option>
+            <option value="Камера">Камера</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">Фото</label>
+          <input type="file" name="image" accept="image/*"
+                 class="w-full px-4 py-3 rounded-2xl border border-indigo-100 bg-white" required>
+        </div>
+
+        <button type="submit"
+                class="w-full md:w-auto px-6 py-3 rounded-2xl bg-violet-600 text-white font-semibold
+                       hover:bg-violet-700 transition shadow-lg">
+          Распознать и сохранить
+        </button>
+      </form>
+
+      <div class="mt-8 text-xs text-slate-500">
+        Сейчас используется тестовый Top-3. В следующем шаге подключим реальную ML-модель.
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Распознавание минерала — Алтын Алтай</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900">
+
+<!-- HEADER -->
+
+<header class="sticky top-0 backdrop-blur bg-white/80 border-b border-indigo-100">
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+<a href="/" class="flex items-center gap-3">
+
+<div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-600 to-sky-500"></div>
+
+<div>
+<div class="font-bold">Алтын Алтай</div>
+<div class="text-xs text-slate-500">ИИ распознавание минералов</div>
+</div>
+
+</a>
+
+<div class="flex gap-3">
+
+<a href="/auth/cabinet/"
+class="px-4 py-2 rounded-xl border border-indigo-200 hover:bg-indigo-50 text-sm font-medium">
+
+Кабинет
+
+</a>
+
+</div>
+
+</div>
+</header>
+
+<!-- MAIN -->
+
+<section class="max-w-3xl mx-auto px-6 py-14">
+
+<h1 class="text-3xl md:text-4xl font-extrabold text-center">
+Распознавание минерала по фото
+</h1>
+
+<p class="text-center text-slate-600 mt-4">
+Загрузите изображение минерала — система определит его тип с помощью нейронной сети.
+</p>
+
+
+<!-- MESSAGES -->
+
+{% if messages %}
+<div class="mt-6 space-y-3">
+
+{% for message in messages %}
+
+<div class="p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm">
+
+{{ message }}
+
+</div>
+
+{% endfor %}
+
+</div>
+{% endif %}
+
+
+<!-- UPLOAD CARD -->
+
+<div class="mt-10 bg-white border border-indigo-100 shadow-xl rounded-3xl p-10">
+
+<form method="POST" enctype="multipart/form-data" class="space-y-8">
+
+{% csrf_token %}
+
+<div class="border-2 border-dashed border-indigo-200 rounded-2xl p-10 text-center bg-slate-50">
+
+<div class="text-5xl mb-4">🪨</div>
+
+<p class="font-semibold text-lg">
+Перетащите фото или выберите файл
+</p>
+
+<p class="text-sm text-slate-500 mt-2">
+Поддерживаются JPG, PNG
+</p>
+
+<input
+type="file"
+name="image"
+accept="image/*"
+required
+class="mt-6 block mx-auto text-sm"
+/>
+
+</div>
+
+
+<div class="flex flex-col md:flex-row gap-4 justify-center">
+
+<button
+type="submit"
+class="px-8 py-4 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white font-semibold shadow">
+
+Распознать минерал
+
+</button>
+
+<a href="/auth/cabinet/"
+class="px-8 py-4 rounded-2xl border border-indigo-200 bg-white hover:bg-indigo-50 font-semibold">
+
+Перейти в историю
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</section>
+
+</body>
+</html>

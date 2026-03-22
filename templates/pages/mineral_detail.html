@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ mineral.title }} — Алтын Алтай</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900">
+
+  {% include "includes/header.html" %}
+
+  <section class="max-w-6xl mx-auto px-6 py-12">
+    <div class="grid lg:grid-cols-2 gap-10 items-start">
+
+      <!-- LEFT: IMAGE + 3D -->
+      <div class="space-y-6">
+
+        <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl overflow-hidden">
+          {% if mineral.image %}
+            <img src="{{ mineral.image.url }}" alt="{{ mineral.title }}" class="w-full h-[420px] object-cover">
+          {% else %}
+            <div class="h-[420px] flex items-center justify-center bg-slate-100 text-slate-400 text-lg">
+              Нет изображения
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-6">
+          <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">
+            3D просмотр
+          </div>
+          <h2 class="mt-2 text-2xl font-extrabold">Интерактивная 3D модель</h2>
+          <p class="mt-3 text-slate-600">
+            Модель можно вращать мышкой. Пока используется демонстрационный 3D-объект, позже сюда можно подключить настоящие 3D модели минералов.
+          </p>
+
+          <div class="mt-5 rounded-[1.5rem] overflow-hidden border border-indigo-100 bg-slate-50">
+            <model-viewer
+              src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+              alt="3D модель минерала"
+              auto-rotate
+              camera-controls
+              shadow-intensity="1"
+              style="width: 100%; height: 420px; background: #f8fafc;">
+            </model-viewer>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: INFO -->
+      <div class="space-y-6">
+        <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-8">
+          <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">
+            {{ mineral.get_category_display }}
+          </div>
+
+          <h1 class="mt-2 text-4xl md:text-5xl font-extrabold">
+            {{ mineral.title }}
+          </h1>
+
+          <p class="mt-5 text-slate-600 leading-8">
+            {{ mineral.description|default:"Описание пока не добавлено." }}
+          </p>
+
+          <div class="grid md:grid-cols-2 gap-4 mt-8">
+            <div class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+              <div class="text-xs text-slate-500">Формула</div>
+              <div class="mt-1 font-semibold">{{ mineral.formula|default:"—" }}</div>
+            </div>
+
+            <div class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+              <div class="text-xs text-slate-500">Цвет</div>
+              <div class="mt-1 font-semibold">{{ mineral.color|default:"—" }}</div>
+            </div>
+
+            <div class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+              <div class="text-xs text-slate-500">Твёрдость</div>
+              <div class="mt-1 font-semibold">{{ mineral.hardness|default:"—" }}</div>
+            </div>
+
+            <div class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+              <div class="text-xs text-slate-500">Категория</div>
+              <div class="mt-1 font-semibold">{{ mineral.get_category_display }}</div>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4 mt-4">
+            <div class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+              <div class="text-xs text-slate-500">Происхождение</div>
+              <div class="mt-1 font-semibold">{{ mineral.origin|default:"—" }}</div>
+            </div>
+
+            <div class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+              <div class="text-xs text-slate-500">Применение</div>
+              <div class="mt-1 font-semibold">{{ mineral.usage|default:"—" }}</div>
+            </div>
+          </div>
+        </div>
+
+        {% if mineral.facts %}
+        <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-8">
+          <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">
+            Интересные факты
+          </div>
+
+          <ul class="mt-5 space-y-3 text-slate-700">
+            {% for fact in mineral.facts %}
+              <li class="rounded-2xl border border-indigo-100 bg-slate-50 p-4">
+                • {{ fact }}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <div class="flex flex-wrap gap-4">
+          <a href="{% url 'pages:collection' %}"
+             class="px-5 py-3 rounded-2xl border border-indigo-200 bg-white hover:bg-indigo-50 font-semibold">
+            ← Назад в коллекцию
+          </a>
+
+          <a href="{% url 'recognize:upload' %}"
+             class="px-5 py-3 rounded-2xl bg-violet-600 text-white hover:bg-violet-700 font-semibold">
+            Распознать минерал
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</body>
+</html>

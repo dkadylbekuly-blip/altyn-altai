@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Карта месторождений — Алтын Алтай</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    #map {
+      height: 720px;
+      border-radius: 24px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900">
+
+  {% include "includes/header.html" %}
+
+  <section class="max-w-7xl mx-auto px-6 py-12">
+    <div class="mb-8">
+      <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">Геология Казахстана</div>
+      <h1 class="mt-2 text-4xl font-extrabold">Карта месторождений минералов</h1>
+      <p class="mt-3 text-slate-600">
+        Интерактивная карта с примерами месторождений и геологических точек Казахстана.
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-[320px_1fr] gap-6">
+      <aside class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-5 h-fit">
+        <div class="text-sm font-semibold text-violet-700 uppercase tracking-wider">Точки на карте</div>
+        <h2 class="mt-2 text-2xl font-extrabold">Месторождения</h2>
+        <p class="mt-2 text-sm text-slate-500">
+          Нажми на карточку, чтобы карта перешла к выбранной точке.
+        </p>
+
+        <div id="deposit-list" class="mt-5 space-y-3"></div>
+      </aside>
+
+      <div class="bg-white rounded-[2rem] border border-indigo-100 shadow-xl p-4">
+        <div id="map"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const map = L.map('map').setView([48.5, 67.0], 5);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    function markerColor(type) {
+      if (type === 'copper') return '#16a34a';
+      if (type === 'polymetal') return '#7c3aed';
+      if (type === 'silicate') return '#2563eb';
+      return '#64748b';
+    }
+
+    function markerIcon(color) {
+      return L.divIcon({
+        className: '',
+        html: `
+          <div style="
+            width: 18px;
+            height: 18px;
+            border-radius: 9999px;
+            background: ${color};
+            border: 3px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+          "></div>
+        `,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9],
+        popupAnchor: [0, -8]
+      });
+    }
+
+    const deposits = [
+      {
+        name: 'Өскемен',
+        coords: [49.95, 82.62],
+        region: 'Восточно-Казахстанская область',
+        minerals: ['Кварц', 'Флюорит', 'Гранит'],
+        text: 'Крупный промышленный и геологический центр региона.',
+        type: 'silicate'
+      },
+      {
+        name: 'Риддер',
+        coords: [50.34, 83.51],
+        region: 'Рудный Алтай',
+        minerals: ['Азурит', 'Малахит', 'Пирит'],
+        text: 'Один из известных центров полиметаллических руд.',
+        type: 'polymetal'
+      },
+      {
+        name: 'Жезказган',
+        coords: [47.80, 67.71],
+        region: 'Улытау',
+        minerals: ['Малахит', 'Азурит', 'Кварц'],
+        text: 'Один из важнейших меднорудных районов Казахстана.',
+        type: 'copper'
+      },
+      {
+        name: 'Алматы',
+        coords: [43.24, 76.92],
+        region: 'Южный Казахстан',
+        minerals: ['Обсидиан', 'Кварц', 'Халцедон'],
+        text: 'Регион с разнообразными горными породами и минералами.',
+        type: 'silicate'
+      }
+    ];
+
+    const listContainer = document.getElementById('deposit-list');
+
+    deposits.forEach(point => {
+      const popupHtml = `
+        <div style="min-width: 240px; font-family: sans-serif;">
+          <div style="font-size: 16px; font-weight: 700; color: #312e81; margin-bottom: 6px;">
+            ${point.name}
+          </div>
+          <div style="font-size: 12px; color: #6b7280; margin-bottom: 10px;">
+            ${point.region}
+          </div>
+          <div style="font-size: 13px; color: #334155; margin-bottom: 10px;">
+            ${point.text}
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #7c3aed; margin-bottom: 6px;">
+            Минералы:
+          </div>
+          <ul style="padding-left: 18px; margin: 0; color: #334155; font-size: 13px;">
+            ${point.minerals.map(m => `<li>${m}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+
+      const marker = L.marker(point.coords, {
+        icon: markerIcon(markerColor(point.type))
+      })
+      .addTo(map)
+      .bindPopup(popupHtml);
+
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'w-full text-left rounded-2xl border border-indigo-100 bg-slate-50 hover:bg-indigo-50 transition p-4';
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="font-bold text-slate-900">${point.name}</div>
+            <div class="text-xs text-slate-500 mt-1">${point.region}</div>
+          </div>
+          <span style="
+            width: 14px;
+            height: 14px;
+            border-radius: 9999px;
+            background: ${markerColor(point.type)};
+            display: inline-block;
+            margin-top: 4px;
+            flex-shrink: 0;
+          "></span>
+        </div>
+        <div class="mt-3 text-sm text-slate-600">${point.text}</div>
+        <div class="mt-3 text-xs font-semibold text-violet-700 uppercase tracking-wider">Минералы</div>
+        <div class="mt-2 text-sm text-slate-700">${point.minerals.join(', ')}</div>
+      `;
+
+      card.addEventListener('click', () => {
+        map.flyTo(point.coords, 7, { duration: 1.2 });
+        marker.openPopup();
+      });
+
+      listContainer.appendChild(card);
+    });
+
+    const legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div');
+      div.innerHTML = `
+        <div style="
+          background: rgba(255,255,255,0.95);
+          padding: 14px 16px;
+          border-radius: 16px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+          border: 1px solid #e0e7ff;
+          min-width: 220px;
+          font-family: sans-serif;
+        ">
+          <div style="font-weight: 700; font-size: 14px; color: #312e81; margin-bottom: 10px;">
+            Легенда месторождений
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="width:14px; height:14px; border-radius:9999px; background:#16a34a; display:inline-block;"></span>
+            <span style="font-size:13px; color:#334155;">Медные месторождения</span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <span style="width:14px; height:14px; border-radius:9999px; background:#7c3aed; display:inline-block;"></span>
+            <span style="font-size:13px; color:#334155;">Полиметаллические руды</span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:14px; height:14px; border-radius:9999px; background:#2563eb; display:inline-block;"></span>
+            <span style="font-size:13px; color:#334155;">Силикатные и горные породы</span>
+          </div>
+        </div>
+      `;
+      return div;
+    };
+
+    legend.addTo(map);
+  </script>
+
+</body>
+</html>
